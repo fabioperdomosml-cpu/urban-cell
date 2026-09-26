@@ -1,189 +1,110 @@
-const products = [
+const productos = [
   {
     id: 1,
-    name: 'iPhone 13',
-    category: 'Celulares',
-    price: 1200000,
-    featured: true,
-    emoji: '📱',
-    description: 'Pantalla Super Retina, cámara dual y rendimiento premium para uso diario.'
+    nombre: 'Samsung A05s',
+    categoria: 'Celulares',
+    descripcion: 'Pantalla amplia, batería duradera y un rendimiento ideal para uso diario.',
+    precio: 370000,
+    imagen: 'img/productos/samsung a05s.jpg'
   },
   {
     id: 2,
-    name: 'Honor X8a',
-    category: 'Celulares',
-    price: 600000,
-    featured: true,
-    emoji: '📱',
-    description: 'Gran batería, rendimiento equilibrado y diseño elegante para cada ocasión.'
+    nombre: 'Samsung A30',
+    categoria: 'Celulares',
+    descripcion: 'Diseño elegante, cámara doble y excelente autonomía para tu día a día.',
+    precio: 420000,
+    imagen: 'img/productos/samsung a30.jpg'
   },
   {
     id: 3,
-    name: 'AirPods Pro',
-    category: 'Audífonos',
-    price: 420000,
-    featured: true,
-    emoji: '🎧',
-    description: 'Audio inmersivo y cancelación de ruido para tus momentos favoritos.'
+    nombre: 'Oppo A20',
+    categoria: 'Celulares',
+    descripcion: 'Muy buen equilibrio entre calidad, batería y rendimiento para tareas diarias.',
+    precio: 390000,
+    imagen: 'img/productos/Oppo a20.jpg'
   },
   {
     id: 4,
-    name: 'Cargador USB-C',
-    category: 'Cargadores',
-    price: 90000,
-    featured: false,
-    emoji: '🔌',
-    description: 'Carga rápida y segura con diseño compacto para llevar a cualquier lugar.'
+    nombre: 'Honor X8A',
+    categoria: 'Celulares',
+    descripcion: 'Cámara potente, pantalla nítida y un diseño moderno para compartir todo.',
+    precio: 510000,
+    imagen: 'img/productos/honor x8a.jpg'
   },
   {
     id: 5,
-    name: 'Power Bank 20000mAh',
-    category: 'Accesorios tecnológicos',
-    price: 180000,
-    featured: false,
-    emoji: '🔋',
-    description: 'Mantén tu teléfono listo con energía extra en cualquier momento.'
+    nombre: 'iPhone 13',
+    categoria: 'Celulares',
+    descripcion: 'Potencia premium, cámara avanzada y experiencia iOS con gran calidad visual.',
+    precio: 1200000,
+    imagen: 'img/productos/Iphone 13.jpg'
   },
   {
     id: 6,
-    name: 'Funda Protectora',
-    category: 'Fundas',
-    price: 75000,
-    featured: false,
-    emoji: '🧤',
-    description: 'Protección resistente con estilo minimalista para tu dispositivo.'
+    nombre: 'Xbox Series S ',
+    categoria: 'Consolas',
+    descripcion: 'Pantalla amplia, batería duradera y un rendimiento ideal para uso diario.',
+    precio: 2700000,
+    imagen: 'img/productos/xbox series s.jpg'
   },
-  {
-    id: 7,
-    name: 'PlayStation 5 Digital',
-    category: 'Consolas',
-    price: 3250000,
-    featured: false,
-    emoji: '🎮',
-    description: 'Experiencia de juego de última generación en casa o en movimiento.'
-  },
-  {
-    id: 8,
-    name: 'Smartwatch Urbano',
-    category: 'Accesorios tecnológicos',
-    price: 280000,
-    featured: false,
-    emoji: '⌚',
-    description: 'Monitorea salud, notificaciones y actividades con estilo moderno.'
-  }
 ];
 
-const formatCurrency = (value) =>
-  new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    maximumFractionDigits: 0,
-  }).format(value);
-
-const setCartCount = () => {
-  const cart = JSON.parse(localStorage.getItem('urbanCart') || '[]');
-  const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-  document.querySelectorAll('#cartCount').forEach((el) => {
-    el.textContent = count;
-  });
-};
-
-const getProductById = (id) => products.find((product) => product.id === Number(id));
-
-const renderFeaturedProducts = () => {
+const renderProducts = (filter = 'todos') => {
+  const container = document.getElementById('catalogProducts');
   const featuredContainer = document.getElementById('featuredProducts');
-  if (!featuredContainer) return;
+  const accessoryContainer = document.getElementById('accessoryProducts');
 
-  const featured = products.filter((product) => product.featured).slice(0, 4);
-  featuredContainer.innerHTML = featured
-    .map(
-      (product) => `
-        <article class="product-card">
-          <div class="product-visual">${product.emoji}</div>
-          <div class="product-body">
-            <div class="product-meta">
-              <span class="badge">${product.category}</span>
-              <span class="price">${formatCurrency(product.price)}</span>
-            </div>
-            <h3>${product.name}</h3>
-            <div class="product-actions">
-              <a href="producto.html?id=${product.id}" class="btn btn-secondary">Ver</a>
-              <button class="btn btn-primary add-to-cart" data-id="${product.id}">Agregar</button>
-            </div>
-          </div>
-        </article>
-      `
-    )
-    .join('');
+  const filtered = filter === 'todos' ? productos : productos.filter(producto => producto.categoria === filter);
 
-  document.querySelectorAll('.add-to-cart').forEach((button) => {
-    button.addEventListener('click', () => {
-      addToCart(Number(button.dataset.id));
-    });
-  });
-};
+  const createCard = (producto) => `
+    <article class="product-card">
+      <a href="producto.html?id=${producto.id}" class="product-image" aria-label="Ver detalles de ${producto.nombre}">
+        <img src="${producto.imagen}" alt="${producto.nombre}" onerror="this.src='img/banner/store-banner.svg'" />
+      </a>
+      <div class="product-body">
+        <span class="product-tag">${producto.categoria}</span>
+        <h3>${producto.nombre}</h3>
+        <p>${producto.descripcion}</p>
+        <div class="product-price-row">
+          <span class="price">$${producto.precio}</span>
+        </div>
+        <div class="product-actions">
+          <button class="btn btn-primary" data-add="${producto.id}">Agregar al carrito</button>
+          <a class="btn btn-secondary" href="producto.html?id=${producto.id}">Ver detalles</a>
+        </div>
+      </div>
+    </article>
+  `;
 
-const renderCatalog = () => {
-  const catalog = document.getElementById('catalogProducts');
-  if (!catalog) return;
+  if (container) container.innerHTML = filtered.map(createCard).join('');
+  if (featuredContainer) featuredContainer.innerHTML = productos.slice(0, 4).map(createCard).join('');
 
-  const filterButtons = document.querySelectorAll('.filter-btn');
-  const renderFiltered = (selected = 'todos') => {
-    const filteredProducts = selected === 'todos' ? products : products.filter((product) => product.category === selected);
-
-    catalog.innerHTML = filteredProducts.length
-      ? filteredProducts
-          .map(
-            (product) => `
-              <article class="product-card">
-                <div class="product-visual">${product.emoji}</div>
-                <div class="product-body">
-                  <div class="product-meta">
-                    <span class="badge">${product.category}</span>
-                    <span class="price">${formatCurrency(product.price)}</span>
-                  </div>
-                  <h3>${product.name}</h3>
-                  <div class="product-actions">
-                    <a href="producto.html?id=${product.id}" class="btn btn-secondary">Ver</a>
-                    <button class="btn btn-primary add-to-cart" data-id="${product.id}">Agregar</button>
-                  </div>
-                </div>
-              </article>
-            `
-          )
-          .join('')
-      : '<div class="empty-state">No hay productos en esta categoría.</div>';
-
-    document.querySelectorAll('.add-to-cart').forEach((button) => {
-      button.addEventListener('click', () => {
-        addToCart(Number(button.dataset.id));
-      });
-    });
-  };
-
-  renderFiltered();
-
-  filterButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      filterButtons.forEach((btn) => btn.classList.toggle('active', btn === button));
-      renderFiltered(button.dataset.filter);
-    });
-  });
-};
-
-const addToCart = (id) => {
-  const cart = JSON.parse(localStorage.getItem('urbanCart') || '[]');
-  const index = cart.findIndex((item) => item.id === id);
-
-  if (index >= 0) {
-    cart[index].quantity += 1;
-  } else {
-    cart.push({ id, quantity: 1 });
+  if (accessoryContainer) {
+    const accesorios = productos.filter(producto => ['Audífonos', 'Cargadores', 'Cables', 'Fundas', 'Accesorios tecnológicos'].includes(producto.categoria));
+    accessoryContainer.innerHTML = accesorios.map(createCard).join('');
   }
 
-  localStorage.setItem('urbanCart', JSON.stringify(cart));
-  setCartCount();
+  document.querySelectorAll('[data-add]').forEach((button) => {
+    button.addEventListener('click', () => addToCart(Number(button.dataset.add)));
+  });
+};
+
+const addToCart = (productId) => {
+  const cart = JSON.parse(localStorage.getItem('urbanCelCart') || '[]');
+  const existing = cart.find(item => item.id === productId);
+
+  if (existing) existing.quantity += 1;
+  else cart.push({ id: productId, quantity: 1 });
+
+  localStorage.setItem('urbanCelCart', JSON.stringify(cart));
+  updateCartCounter();
   alert('Producto agregado al carrito');
+};
+
+const updateCartCounter = () => {
+  const cart = JSON.parse(localStorage.getItem('urbanCelCart') || '[]');
+  const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+  document.querySelectorAll('#cartCount').forEach(counter => counter.textContent = total);
 };
 
 const renderProductDetail = () => {
@@ -191,37 +112,56 @@ const renderProductDetail = () => {
   if (!detailContainer) return;
 
   const params = new URLSearchParams(window.location.search);
-  const product = getProductById(params.get('id'));
+  const productId = Number(params.get('id'));
+  const product = productos.find(item => item.id === productId);
 
   if (!product) {
-    detailContainer.innerHTML = '<div class="empty-state">No se encontró el producto.</div>';
+    detailContainer.innerHTML = `
+      <div class="empty-state">
+        <h3>Producto no encontrado</h3>
+        <p>El artículo solicitado no existe o fue eliminado.</p>
+        <a href="productos.html" class="btn btn-primary">Volver al catálogo</a>
+      </div>
+    `;
     return;
   }
 
   detailContainer.innerHTML = `
-    <div class="product-detail-layout">
-      <div class="product-detail-visual">${product.emoji}</div>
-      <div class="product-detail-copy">
-        <span class="badge">${product.category}</span>
-        <h1>${product.name}</h1>
-        <span class="price">${formatCurrency(product.price)}</span>
-        <p>${product.description}</p>
-        <div class="product-detail-actions">
-          <button class="btn btn-primary add-to-cart" data-id="${product.id}">Agregar al carrito</button>
+    <div class="product-detail-card">
+      <div class="product-detail-image">
+        <img src="${product.imagen}" alt="${product.nombre}" onerror="this.src='img/banner/store-banner.svg'" />
+      </div>
+      <div class="product-detail-info">
+        <span class="product-tag">${product.categoria}</span>
+        <h1>${product.nombre}</h1>
+        <p class="product-price-detail">$${product.precio}</p>
+        <p>${product.descripcion}</p>
+        <div class="product-actions detail-actions">
+          <button class="btn btn-primary" data-add="${product.id}">Agregar al carrito</button>
           <a href="productos.html" class="btn btn-secondary">Seguir comprando</a>
         </div>
       </div>
     </div>
   `;
 
-  detailContainer.querySelector('.add-to-cart').addEventListener('click', () => {
-    addToCart(product.id);
-  });
+  const addButton = detailContainer.querySelector('[data-add]');
+  if (addButton) {
+    addButton.addEventListener('click', () => addToCart(product.id));
+  }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  setCartCount();
-  renderFeaturedProducts();
-  renderCatalog();
+  updateCartCounter();
   renderProductDetail();
+
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  filterButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      filterButtons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      renderProducts(button.dataset.filter);
+    });
+  });
+
+  renderProducts();
 });
